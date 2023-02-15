@@ -1,25 +1,95 @@
 import express from 'express';
 import proxy from 'express-http-proxy';
 import morgan from 'morgan';
+import session from 'express-session';
 
-import config from './config.js';
+import config from './config/index.js';
+import authenticateToken from './middleware/authentication.js';
+
+import ROUTES from './routes/index.js';
+import setupProxies from './proxy.js';
+import setupAuth from './auth.js';
 
 const app = express();
 
 app.use(
     morgan(':method :url :status :res[content-length] - :response-time ms'),
 );
+const dataProxy = [
+    // {
+    //     'http://localhost:8001': {
+    //         proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+    //             // you can update headers
+    //             const userData = {
+    //                 userId: '1234f',
+    //                 roles: 'lender',
+    //             };
+    //             proxyReqOpts.headers['user'] = JSON.stringify(userData);
+    //             // you can change the method
+    //             return proxyReqOpts;
+    //         },
+    //     },
+    // },
+    {
+        url: '/api/users',
+        auth: true,
+        creditCheck: true,
+        target: 'http://localhost:8001',
+    },
+];
+setupAuth(app, ROUTES);
+setupProxies(app, ROUTES);
+// setupProxies(app, dataProxy);
+// proxy(dataProxy);
 app.use(express.json());
+// console.log('ROUTES', app._router.stack);
 
-try {
-    app.use('/api/users/', proxy(config.service.users));
-} catch (error) {
-    console.log(error);
-}
+// const secret = config.SESSION_SECRET;
+// const store = new session.MemoryStore();
+// const protect = (req, res, next) => {
+//     const { authenticated } = req.session;
+
+//     if (!authenticated) {
+//         res.sendStatus(401);
+//     } else {
+//         next();
+//     }
+// };
+
+// app.use(
+//     session({
+//         secret,
+//         resave: false,
+//         saveUninitialized: true,
+//         store,
+//     }),
+// );
+
+// try {
+//     // app.use('/api/users/', proxy(config.service.users));
+//     app.use(
+//         '/api/users/',
+//         authenticateToken,
+//         proxy(config.service.users, {
+//             proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+//                 // you can update headers
+//                 const userData = {
+//                     userId: '1234f',
+//                     roles: 'lender',
+//                 };
+//                 proxyReqOpts.headers['user'] = JSON.stringify(userData);
+//                 // you can change the method
+//                 return proxyReqOpts;
+//             },
+//         }),
+//     );
+// } catch (error) {
+//     console.log(error);
+// }
 
 // API ENDPOINT NOT FOUND
 app.use((req, res, next) => {
-    const error = new Error("API endpoint doesn't exist");
+    const error = new Error("API endpoint doesn't exist JAJAJA");
     error.status = 404;
     next(error);
 });
