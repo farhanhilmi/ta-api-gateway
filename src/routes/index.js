@@ -2,6 +2,22 @@ import config from '../config/index.js';
 
 export default [
     {
+        url: '/api/authentication/user',
+        auth: true,
+        creditCheck: false,
+        rateLimit: {
+            windowMs: 15 * 60 * 1000,
+            max: 5,
+        },
+        proxy: {
+            target: config.service.auth,
+            changeOrigin: true,
+            pathRewrite: {
+                [`^/api/authentication`]: '',
+            },
+        },
+    },
+    {
         url: '/api/authentication',
         auth: false,
         creditCheck: false,
