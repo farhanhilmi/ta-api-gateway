@@ -19,6 +19,12 @@ const setupAuth = (app, routes) => {
     // app.use(keycloak.middleware());
 
     routes.forEach((r) => {
+        // r.proxy.onError = (err, req, res) => {
+        //     console.log('pouet', err);
+        //     res.status(500).json({
+        //         message: 'Something went wrong. Server is unavailable',
+        //     });
+        // };
         if (r.auth) {
             r.proxy.onProxyReq = (proxyReq, req, res) => {
                 console.log('req,ad', req.user);
