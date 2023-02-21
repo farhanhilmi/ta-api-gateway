@@ -1,3 +1,6 @@
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
+
 import express from 'express';
 import proxy from 'express-http-proxy';
 import morgan from 'morgan';
@@ -10,39 +13,29 @@ import ROUTES from './routes/index.js';
 import setupProxies from './proxy.js';
 import setupAuth from './auth.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 
 app.use(
     morgan(':method :url :status :res[content-length] - :response-time ms'),
 );
-const dataProxy = [
-    // {
-    //     'http://localhost:8001': {
-    //         proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
-    //             // you can update headers
-    //             const userData = {
-    //                 userId: '1234f',
-    //                 roles: 'lender',
-    //             };
-    //             proxyReqOpts.headers['user'] = JSON.stringify(userData);
-    //             // you can change the method
-    //             return proxyReqOpts;
-    //         },
-    //     },
-    // },
-    {
-        url: '/api/users',
-        auth: true,
-        creditCheck: true,
-        target: 'http://localhost:8001',
-    },
-];
+
+morgan.token('param', function (req, res, param) {
+    return req.params[param];
+});
+
 setupAuth(app, ROUTES);
 setupProxies(app, ROUTES);
 // setupProxies(app, dataProxy);
 // proxy(dataProxy);
-app.use(express.json());
 // console.log('ROUTES', app._router.stack);
+app.use(express.json());
+
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, './views/template.html'));
+});
 
 // const secret = config.SESSION_SECRET;
 // const store = new session.MemoryStore();
