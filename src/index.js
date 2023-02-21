@@ -12,6 +12,7 @@ import authenticateToken from './middleware/authentication.js';
 import ROUTES from './routes/index.js';
 import setupProxies from './proxy.js';
 import setupAuth from './auth.js';
+import errorHandler from './errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,6 +27,7 @@ morgan.token('param', function (req, res, param) {
     return req.params[param];
 });
 
+errorHandler(app, ROUTES);
 setupAuth(app, ROUTES);
 setupProxies(app, ROUTES);
 // setupProxies(app, dataProxy);
