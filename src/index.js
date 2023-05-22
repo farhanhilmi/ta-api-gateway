@@ -13,11 +13,14 @@ import ROUTES from './routes/index.js';
 import setupProxies from './proxy.js';
 import setupAuth from './auth.js';
 import errorHandler from './errorHandler.js';
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+app.use(cors({ origin: '*' }));
 
 app.use(
     morgan(':method :url :status :res[content-length] - :response-time ms'),
@@ -81,6 +84,16 @@ app.get('/', function (req, res) {
 // } catch (error) {
 //     console.log(error);
 // }
+
+// WEBHOOKS ENDPOINTS Payment Virtual Account
+// Xendit callback verification token bAzXKdMmdeoPImM88C9ZdbXitAp0R7GNEIK9uTkWKXXLGVb1
+app.post('/hook', (req, res, next) => {
+    console.log('BODY:', req.body);
+    // res.status(200).end();
+    res.status(200).json({
+        data: req.body,
+    });
+});
 
 // API ENDPOINT NOT FOUND
 app.use((req, res, next) => {

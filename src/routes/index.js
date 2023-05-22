@@ -34,7 +34,7 @@ export default [
         },
     },
     {
-        url: '/api/lender',
+        url: '/api/lenders',
         auth: true,
         creditCheck: false,
         rateLimit: {
@@ -42,15 +42,15 @@ export default [
             max: 5,
         },
         proxy: {
-            target: config.service.lender,
+            target: config.service.lenders,
             changeOrigin: true,
             pathRewrite: {
-                [`^/api/lender`]: '',
+                [`^/api/lenders`]: '',
             },
         },
     },
     {
-        url: '/api/borrower',
+        url: '/api/borrowers',
         auth: true,
         creditCheck: false,
         rateLimit: {
@@ -58,15 +58,15 @@ export default [
             max: 5,
         },
         proxy: {
-            target: config.service.borrower,
+            target: config.service.borrowers,
             changeOrigin: true,
             pathRewrite: {
-                [`^/api/borrower`]: '',
+                [`^/api/borrowers`]: '',
             },
         },
     },
     {
-        url: '/api/funding',
+        url: '/api/loans',
         auth: true,
         creditCheck: false,
         rateLimit: {
@@ -74,10 +74,10 @@ export default [
             max: 5,
         },
         proxy: {
-            target: config.service.funding,
+            target: config.service.loans,
             changeOrigin: true,
             pathRewrite: {
-                [`^/api/funding`]: '',
+                [`^/api/loans`]: '',
             },
         },
     },
